@@ -1,0 +1,16 @@
+http://mybatis.org/dtd/mybatis-3-config.dtd
+key -->-//mybatis.org//DTD Config 3.0//EN
+prefrence --> xml catalog
+
+xml 颇老 积己 dtd颇老 急琶
+
+Root element 犬牢
+
+
+mapper积己
+
+key -->http://mybatis.org/dtd/mybatis-3-mapper.dtd
+
+
+create user MyBatis identified by MyBatis;
+grant resource, connect to MyBatis;
