@@ -12,5 +12,29 @@ mapper생성
 key -->http://mybatis.org/dtd/mybatis-3-mapper.dtd
 
 
+
+DB권한부여
 create user MyBatis identified by MyBatis;
 grant resource, connect to MyBatis;
+
+board
+	controller
+	model
+		dao
+		service
+		vo
+		exception
+
+common
+filter
+
+
+member
+	controller
+	model
+		dao
+		service
+		vo
+		exception
+
+

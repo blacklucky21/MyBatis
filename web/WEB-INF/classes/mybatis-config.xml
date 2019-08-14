@@ -16,6 +16,11 @@ The content of element type "configuration" must match
   	
   	</settings>
   	
+  	<typeAliases>
+  		<typeAlias type="member.model.vo.Member" alias="Member"/>
+  	
+  	</typeAliases>
+  	
 	<environments default="development"><!--DB연결할 설정 정보 선언 -->
 		<environment id="development">
 			<transactionManager type="JDBC"/>
@@ -37,14 +42,14 @@ The content of element type "configuration" must match
 			 
 			  -->
 			 	<property name="driver" value="${driver}"/>
-			 	<property name="url" value=${url}/>
+			 	<property name="url" value="${url}"/>
 			 	<property name="username" value="${username}"/>
 			 	<property name="password" value="${password}"/>
 			 </dataSource>
 		</environment>
 	</environments>
 	
-
-
-
+	<mappers>
+		<mapper resource="/mappers/member-mapper.xml"/>
+	</mappers>
 </configuration>
