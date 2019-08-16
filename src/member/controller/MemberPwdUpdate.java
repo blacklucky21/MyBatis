@@ -1,30 +1,29 @@
 package member.controller;
 
 import java.io.IOException;
+import java.util.HashMap;
 
-import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import javax.servlet.http.HttpSession;
 
 import member.model.exception.MemberException;
 import member.model.service.MemberService;
 import member.model.vo.Member;
 
 /**
- * Servlet implementation class LoginServlet
+ * Servlet implementation class MemberPwdUpdate
  */
-@WebServlet("/login.me")
-public class LoginServlet extends HttpServlet {
+@WebServlet("/mPwdUpdate.me")
+public class MemberPwdUpdate extends HttpServlet {
 	private static final long serialVersionUID = 1L;
        
     /**
      * @see HttpServlet#HttpServlet()
      */
-    public LoginServlet() {
+    public MemberPwdUpdate() {
         super();
         // TODO Auto-generated constructor stub
     }
@@ -33,36 +32,37 @@ public class LoginServlet extends HttpServlet {
 	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		String userId = request.getParameter("userId");
+		Member member = (Member)request.getSession().getAttribute("loginUser");
+		
+		String userId = member.getUserId();
 		String userPwd = request.getParameter("userPwd");
+		String newPwd = request.getParameter("newPwd");
 		
+		/*
+		 * 
+		 * update member
+		 * set user_pwd =#{newPwd}
+		 * where user_id =#{userId} and user_pwd=#{userPwd}
+		 * 
+		 */
 		
-		
-		
-		System.out.println(userId);
-		System.out.println(userPwd);
-		Member m = new Member();
-		
-		m.setUserId(userId);
-		m.setUserPwd(userPwd);
-		
+		HashMap<String,String> map = new HashMap<>();
+		map.put("userId",userId);
+		map.put("userPwd",userPwd);
+		map.put("newPwd",newPwd);
 		
 		try {
-			Member member = new MemberService().selectMember(m);
-			
-			HttpSession session = request.getSession();
-			session.setAttribute("loginUser",member);
-			session.setMaxInactiveInterval(600);
-			request.getRequestDispatcher("/").forward(request, response);
-			//"/"있으면 알아서 indexPage로 넘어감
+			new MemberService().pwdUpdate(map);
+			member.setUserPwd(newPwd);
+			request.getSession().setAttribute("loginUser",member);
+			response.sendRedirect(request.getContextPath());
 		} catch (MemberException e) {
-			//조회된 상황이 없을때 catch로 넘어옴
-			RequestDispatcher error = request.getRequestDispatcher("/views/common/errorPage.jsp");
+			
 			request.setAttribute("message",e.getMessage());
-			error.forward(request, response);
+			request.getRequestDispatcher("views/common/errorPage.jsp").forward(request, response);
+			
+			
 		}
-		
-		
 	}
 
 	/**

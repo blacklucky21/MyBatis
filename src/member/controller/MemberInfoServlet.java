@@ -2,7 +2,6 @@ package member.controller;
 
 import java.io.IOException;
 
-import javax.servlet.RequestDispatcher;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -15,16 +14,16 @@ import member.model.service.MemberService;
 import member.model.vo.Member;
 
 /**
- * Servlet implementation class LoginServlet
+ * Servlet implementation class MemberInfoServlet
  */
-@WebServlet("/login.me")
-public class LoginServlet extends HttpServlet {
+@WebServlet("/info.me")
+public class MemberInfoServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
        
     /**
      * @see HttpServlet#HttpServlet()
      */
-    public LoginServlet() {
+    public MemberInfoServlet() {
         super();
         // TODO Auto-generated constructor stub
     }
@@ -33,36 +32,22 @@ public class LoginServlet extends HttpServlet {
 	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		String userId = request.getParameter("userId");
-		String userPwd = request.getParameter("userPwd");
+
+		HttpSession session = request.getSession();
+		Member member = (Member)session.getAttribute("loginUser"); //세션에서 로그인한 정보 받아옴
 		
-		
-		
-		
-		System.out.println(userId);
-		System.out.println(userPwd);
-		Member m = new Member();
-		
-		m.setUserId(userId);
-		m.setUserPwd(userPwd);
-		
-		
-		try {
-			Member member = new MemberService().selectMember(m);
-			
-			HttpSession session = request.getSession();
-			session.setAttribute("loginUser",member);
-			session.setMaxInactiveInterval(600);
-			request.getRequestDispatcher("/").forward(request, response);
-			//"/"있으면 알아서 indexPage로 넘어감
+		try { //정보가 바뀌었을수도 있어서 한번더 가져와준다
+			member = new MemberService().selectMember(member); // member변수에 다시 넣어준다
+			request.setAttribute("member",member);
+			request.getRequestDispatcher("views/member/memberInfo.jsp").forward(request, response);
 		} catch (MemberException e) {
-			//조회된 상황이 없을때 catch로 넘어옴
-			RequestDispatcher error = request.getRequestDispatcher("/views/common/errorPage.jsp");
-			request.setAttribute("message",e.getMessage());
-			error.forward(request, response);
+			request.setAttribute("message", e.getMessage());
+			request.getRequestDispatcher("views/member/errorPage.jsp").forward(request, response);
+			
+			
 		}
 		
-		
+	
 	}
 
 	/**

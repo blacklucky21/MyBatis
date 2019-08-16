@@ -3,11 +3,68 @@
 <mapper namespace = "memberMapper">
   		<!--1.select 구문  -->
  		 			<!--id=쿼리문 구별해주는 역활 / parameterType내가 쿼리에 전달해줄곳 지정해줌 resultType:내가 어디에 실행한것을 담아줄 위치  --> 
-  		<select id="loginMember" parameterType="member.model.vo.Member" resultType="member.model.vo.Member">
+ <!--  		<select id="loginMember" parameterType="member.model.vo.Member" resultType="member.model.vo.Member">
   		select * 
   		from member
   		where user_id = #{userId} and user_pwd = #{userPwd}
   		
-  		</select>
+  		</select> -->
   		<!--$로 써도되지만 보안을 위해 #사용  -->
+  		
+  		<!--property =자바의 필드변수 이름 / column = DB의 해당 컬럼 
+  			
+  		-->
+  		<resultMap type="Member" id="memberResultSet">
+			<!--DB의 기본 키: id  -->
+			<id property="userId" column="USER_ID"/>
+			<!--DB의 일반 컬럼 : result -->
+			<result property="userPwd" column="USER_PWD"/>
+			<result property="userName" column="USER_NAME"/>
+			<result property="nickName" column="NICKNAME"/>
+			<result property="email" column="email"/>
+			<result property="birthDay" column="birthday"/>
+			<result property="gender" column="gender"/>
+			<result property="phone" column="phone"/>
+			<result property="address" column="address"/>
+			<result property="enrollDate" column="enroll_date"/>
+			<result property="updateDate" column="update_date"/>
+			<result property="mStatus" column="m_status"/>  		
+  		
+  		</resultMap>
+  		<select id="loginMember" parameterType="Member" resultMap="memberResultSet">
+  				select *
+  				from member
+  				where user_id = #{userId} and user_pwd=#{userPwd}
+  		
+  		</select>
+  		
+  		
+  		<insert id="insertMember" parameterType="Member" > <!--int형이라 resultMap붙여줄 필요 x  -->
+  			insert into member
+  			values(#{userId},#{userPwd},#{userName},#{nickName},#{email},#{birthDay},#{gender},#{phone},#{address},sysdate,sysdate,default)
+  		
+  		</insert>
+  		
+  		<update id="updateMember" parameterType="Member">
+  			update member
+  			set user_name=#{userName},nickName=#{nickName},email=#{email},birthday=#{birthDay}
+  			,gender = #{gender}, phone=#{phone},address =#{address}
+  			where user_id = #{userId}
+  		
+  		</update>
+  		
+  		<update id="updatePwd" parameterType="map"> <!--map으로 전해주므로 map ㅇㅇ  -->
+  		update member
+		set user_pwd =#{newPwd}
+		where user_id =#{userId} and user_pwd=#{userPwd}
+  		
+  		
+  		</update>
+  		
+  		<delete id="deleteMember" parameterType="String" >
+  		
+  		delete from member
+  		where user_id =#{userId} 
+  		
+  		</delete>
 </mapper>
