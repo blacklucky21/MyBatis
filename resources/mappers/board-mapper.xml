@@ -1,0 +1,148 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="boardMapper">
+
+  <!--게시글 수 조회용 쿼리문  -->
+  <select id ="selectListCount" resultType="_int">
+    	select count(*)
+    	from board
+    	where b_status ='Y'
+  </select>
+  
+  <!--게시글 목록 조회용 쿼리문 -->
+  
+  <select id="selectBoardList" resultMap="boardResultSet">
+  	select *
+  	from board b
+  	join member m on(b.bwriter = m.user_id)
+  	where b_status = 'Y'
+  	order by bid desc
+  
+  </select>
+  
+  <!--게시글 목록 조회용 resultMap-->
+  <resultMap type="Board" id="boardResultSet">
+  	<id property="bId" column="BID"/>
+  	<result property="bTitle" column="BTITLE"/>
+	<result property="bType" column="BTYPE"/>
+	<result property="bContent" column="BCONTENT"/> 	
+  	<result property="bWriter" column="BWRITER"/>
+  	<result property="nickName" column="NICKNAME"/>
+  	<result property="bCount" column="BCOUNT"/>
+  	<result property="bCreateDate" column="B_CREATE_DATE"/>
+  	<result property="bModifyDate" column="B_MODIFY_DATE"/>
+  	<result property="bStatus" column="B_STATUS"/>
+  
+  </resultMap>
+  
+  <!-- 게시글 조회수 증가용 쿼리문 -->
+  <update id="updateBoardCount" parameterType="_int">
+      update board
+      set bcount = bcount + 1
+      where bid = #{bId}
+  
+  </update>
+  
+  <!-- 게시글 상세보기용 쿼리문  -->
+  
+  <select id="selectBoardDetail" resultMap ="boardResultSet2">
+  		select bid,btype,btitle,bcontent,bwriter,m.nickname as b_nickname,bcount,b_create_date,
+  		b_modify_date,b_status,rid,rcontent,ref_bid,m2.nickname as r_nickname,r_create_date,
+  		r_modify_date,r_status
+  		from board b 
+  		left join reply r on (r.ref_bid = b.bid)
+  		join member m on(b.bwriter = m.user_id)
+  		left join member m2 on(r.rwriter = m2.user_id)
+  		where b.bid = #{bId}
+  		and b_status = 'Y'
+  		order by  rid desc
+  
+  </select>
+  
+  <!-- 댓글 매핑 resultMap -->
+  <resultMap type="Reply" id="replyResultSet">
+  	<id property="rId" column="rid"/>
+  	<result property="rContent" column="rcontent"/>
+  	<result property="refBid" column="ref_bid"/>
+  	<result property="rwriter" column="rwriter"/>
+  	<result property="nickName" column="r_nickname"/>
+  	<result property="rCreateDate" column="r_create_date"/>
+  	<result property="rModifyDate" column="r_modfiy_date"/>
+  	<result property="rStatus" column="r_status"/>
+  </resultMap>
+  
+  
+    <resultMap type="Board" id="boardResultSet2">
+  	<id property="bId" column="BID"/>
+  	<result property="bTitle" column="BTITLE"/>
+	<result property="bType" column="BTYPE"/>
+	<result property="bContent" column="BCONTENT"/> 	
+  	<result property="bWriter" column="BWRITER"/>
+  	<result property="nickName" column="b_nickname"/>
+  	<result property="bCount" column="BCOUNT"/>
+  	<result property="bCreateDate" column="B_CREATE_DATE"/>
+  	<result property="bModifyDate" column="B_MODIFY_DATE"/>
+  	<result property="bStatus" column="B_STATUS"/>
+  
+  
+  	<collection property="replyList" javaType="java.util.ArrayList" resultMap = "replyResultSet"/> <!--resultMap ==>replyResultSet을 참고해라 -->
+  	 	<!-- ArrayList를 사용해서 collection을 사용했다 -->
+  	
+  </resultMap>
+  
+  <!--게시글 검색 결과 수 조회용 쿼리문  -->
+  
+  
+  <select id="selectSearchResultCount" resultType="_int" >
+	 select count(*)
+	 from board b 
+	 join member m on (b.bwriter = m.user_id)
+	 where b_status='Y'
+	 
+	 <!--  1) if문으로 하는 방법 -->
+	 <if test="writer !=null">
+	 	and nickname =#{writer}
+	 
+	 </if>
+	 
+	 <if test="title !=null">
+	 	and btitle like '%' || #{title} || '%'
+	 </if>
+	 
+	 <if test="content !=null">
+	 	and bcontent like '%' || #{content} || '%'
+	 	
+	 	
+	 </if>
+	   
+  
+  </select>
+  
+  <!--게시글 검색 결과 목록 조회용 쿼리문  -->
+  <select id="selectSearchResultList" resultMap="boardResultSet">
+  
+  	select*
+  	from board b
+  	join member m on(b.bwriter = m.user_id)
+  	where b_status ='Y'
+  	
+  	<!--2) choose,when,otherwise  -->
+  	
+  	<choose>
+  		<when test="writer !=null">
+  			and nickname = #{writer}
+  		</when>
+  		
+  		<when test="title !=null">
+  		and btitle like '%' || #{title} || '%'
+  		
+  		</when>
+  		<otherwise>
+  		 and bcontent like '%' || #{content} || '%'
+  		</otherwise>
+  	
+  	</choose>
+  	order by bid desc
+  
+  </select>
+</mapper>

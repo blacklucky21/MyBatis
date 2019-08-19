@@ -18,8 +18,9 @@ The content of element type "configuration" must match
   	
   	<typeAliases>
   		<typeAlias type="member.model.vo.Member" alias="Member"/>
-  	
-  	</typeAliases>
+  		<typeAlias type="board.model.vo.Board" alias="Board"/>
+  		<typeAlias type="board.model.vo.Reply" alias="Reply"/>
+  	</typeAliases><!--다른 클래스의 풀네임을 간단하게 부를 별칭  -->
   	
 	<environments default="development"><!--DB연결할 설정 정보 선언 -->
 		<environment id="development">
@@ -51,5 +52,6 @@ The content of element type "configuration" must match
 	
 	<mappers>
 		<mapper resource="/mappers/member-mapper.xml"/>
+		<mapper resource="/mappers/board-mapper.xml"/>
 	</mappers>
 </configuration>

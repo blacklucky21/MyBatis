@@ -11,7 +11,7 @@ import org.apache.ibatis.session.SqlSessionFactoryBuilder;
 public class Template {
 	public static SqlSession getSqlSession() {
 		
-		///SqlSession 안에서 commit rollback 을 다 제공해주고있다 ㅇㅇ.
+		///SqlSession 안에서 commit rollback close 을 다 제공해주고있다 ㅇㅇ.
 		SqlSession session = null;
 		
 		try {
